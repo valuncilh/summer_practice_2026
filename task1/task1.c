@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 typedef struct {
     int *array;
@@ -11,8 +12,8 @@ typedef struct {
 
 int* parse_input(int*);
 void merge(int*, int, int, int);
-void parallel_merge_sortt(int*, int, int);
 void* sequential_merge_sort(void*);
+void parallel_merge_sort(int*, int, int);
 
 int main(int argc, char **argv)
 {
@@ -26,7 +27,7 @@ int main(int argc, char **argv)
 
     int num_of_thds = atoi(argv[1]);
     if(num_of_thds <= 0){
-        fprintf(stderr, "Number of threads should be >0\n");
+        fprintf(stderr, "Number of threads should be > 0\n");
         return 1;
     }
 
@@ -36,11 +37,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    //if(array){
-    //    parallel_merge_sortt(array, array_size, num_of_thds);
-    //    free(array);
-    //}
 
+    parallel_merge_sort(array, array_size, num_of_thds);
+
+    for(int i = 0; i < array_size; ++i){
+        printf("%d", *(array + i));
+        if(i < array_size - 1) printf(" ");
+    } printf("\n");
 
 
     free(array);
@@ -60,7 +63,7 @@ int* parse_input(int* size_ptr)
 
     int count = 0;
     char* copy_buf = strdup(buff);
-    if(!copy_buf){ fprintf(stderr, "strdup"); exit(1); }
+    if(!copy_buf){ fprintf(stderr, "strdup failed"); exit(1); }
 
     char* token = strtok(copy_buf, " \t\n");
     while(token){
@@ -76,7 +79,7 @@ int* parse_input(int* size_ptr)
     }
 
     int* result = (int*)malloc(count * sizeof(int));
-    if(!result){ fprintf(stderr, "result:=malloc"); exit(1); }
+    if(!result){ fprintf(stderr, "malloc failed for result array"); exit(1); }
 
     int idx = 0;
     token = strtok(buff, " \t\n");
@@ -98,6 +101,12 @@ void merge(int* arr, int left, int mid, int right)
     int *L = malloc(p1 * sizeof(int));
     int *R = malloc(p2 * sizeof(int));
 
+    if(!L || !R){
+        perror("malloc faiiled in merge");
+        free(L);
+        free(R);
+        exit(1);
+    }
 
     for (int i = 0; i < p1;  ++i) L[i] = arr[left + i];   
     for (int j = 0; j < p2 ; ++j) R[j] = arr[mid + 1 + j]; 
@@ -153,8 +162,8 @@ void* sequential_merge_sort(void* arg){
 
     int mid = left + (right - left) / 2;
     
-    thread_data_t left_data = {data->array, left, mid};
-    thread_data_t right_data = {data->array, mid + 1, right};
+    thread_data left_data = {data->array, left, mid};
+    thread_data right_data = {data->array, mid + 1, right};
 
     sequential_merge_sort(&left_data);
     sequential_merge_sort(&right_data);
@@ -162,5 +171,55 @@ void* sequential_merge_sort(void* arg){
     merge(data->array, left, mid, right);
 
     return NULL;
+}
+
+void parallel_merge_sort(int *arr, int size, int num_threads) {
+    if (size <= 1) return;
+
+    if(num_threads > size) num_threads = size;
+    if(num_threads < 1) num_threads = 1;
+
+    pthread_t *threads = malloc(num_threads * sizeof(pthread_t));
+    thread_data *data = malloc(num_threads * sizeof(thread_data));
+    
+    if (!threads || !data) {
+        perror("malloc failed"); free(threads); free(data); exit(1);
+    }
+
+    int chunk_size = size / num_threads;
+    if(chunk_size < 1) chunk_size = 1;
+
+    for (int i = 0; i < num_threads; i++) {
+        data[i].array = arr;
+        data[i].left = i * chunk_size;
+        // Последний поток заберёт хвост, если размер не поделится нацело
+        data[i].right = (i == num_threads - 1) ? size - 1 : (i + 1) * chunk_size - 1;
+
+        // Защита от некорректных диапазонов, если left > right
+        if (data[i].left <= data[i].right) {
+            pthread_create(&threads[i], NULL, sequential_merge_sort, &data[i]);
+        } else {
+            // Если диапазон пустой, помечаем поток как "выполненный" (NULL)
+            threads[i] = 0; 
+        }
+    }
+    
+    for (int i = 0; i < num_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    for (int width = chunk_size; width < size; width *= 2) {
+        for (int start = 0; start < size; start += 2 * width) {
+            int mid = start + width - 1;
+            int end = (start + 2 * width - 1 < size - 1) ? start + 2 * width - 1 : size - 1;
+            
+            if (mid < size - 1) {
+                merge(arr, start, mid, end);
+            }
+        }
+    }
+
+    free(threads);
+    free(data);
 }
 
