@@ -46,6 +46,37 @@ int main(int argc, char** argv)
             perror("select failed\n");
             break;
         }
+
+        if(FD_ISSET(STDIN_FILENO, &readfds)){
+            if(fgets(buff, sizeof(buff), stdin) == NULL){
+                // Ctrl+D (EOF на stdin)
+                printf("\nExiting...\n");
+                break;
+            }
+
+            if(write(fifo_fd, buff, strlen(buff)) == - 1){
+                perror("write to fifo failed");
+                break;
+            }
+        }
+
+        if (FD_ISSET(fifo_fd, &readfds)) {
+            ssize_t n = read(fifo_fd, buff, sizeof(buff) - 1);
+            
+            if (n > 0) {
+                buff[n] = '\0';
+                printf("> %s", buff);
+                fflush(stdout); 
+            } else if (n == 0) {
+                fprintf(stderr, "\nListener disconnected.\n");
+                break;
+            } else {
+                if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                    perror("read from fifo failed");
+                    break;
+                }
+            }
+        }
     }
 
     close(fifo_fd);
