@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     int* array = NULL;
 
     if(argc < 2){
-        fprintf(stderr, "Should usage: %s > number_of_threads \n", argv[0]);
+        fprintf(stderr, "Should usage: %s > number_of_threads\n", argv[0]);
         return 1;
     }
 

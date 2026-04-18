@@ -10,18 +10,44 @@
 int main(int argc, char** argv)
 {
     if(argc < 2){
-        fprintf(stderr, "usage: %s fifo_path", argv[0]); return 1;
+        fprintf(stderr, "usage: %s fifo_path\n", argv[0]); return 1;
     }
 
     const char* fifo_path = argv[1];
-    if(!fifo_path){ fprintf(stderr, "path is NULL"); return 1; }
+    if(!fifo_path){ fprintf(stderr, "path is NULL\n"); return 1; }
 
     if(mkfifo(fifo_path, 0666) == -1 && errno != EEXIST){
-        perror("mkfifo failed");
+        perror("mkfifo failed\n");
         return 1;
     }
 
     printf("FIFO '%s' is ready. Chating...\n", fifo_path);
 
+    int fifo_fd = open(fifo_path, O_RDWR);
+    if(fifo_fd == -1){
+        perror("failed open fifo\n");
+        return 1;
+    }
+
+    char buff[1024];
+    fd_set readfds;
+    int max_fd = (STDIN_FILENO > fifo_fd) ? STDIN_FILENO : fifo_fd;
+
+    printf("Type a msg and press ENTER. Press Ctrl+D to quit.\n");
+
+    for(;;){
+        FD_ZERO(&readfds);
+        FD_SET(STDIN_FILENO, &readfds);
+        FD_SET(fifo_fd, &readfds);
+
+        int action = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        if(action == -1){
+            if(errno == EINTR) continue;
+            perror("select failed\n");
+            break;
+        }
+    }
+
+    close(fifo_fd);
     return 0;
 }
