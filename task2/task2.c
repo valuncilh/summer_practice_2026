@@ -10,14 +10,14 @@
 int main(int argc, char** argv)
 {
     if(argc < 2){
-        fprintf(stderr, "usage: %s fifo_path\n", argv[0]); return 1;
+        fprintf(stderr, "Usage: %s fifo_path\n", argv[0]); return 1;
     }
 
     const char* fifo_path = argv[1];
-    if(!fifo_path){ fprintf(stderr, "path is NULL\n"); return 1; }
+    if(!fifo_path){ fprintf(stderr, "Path is NULL\n"); return 1; }
 
     if(mkfifo(fifo_path, 0666) == -1 && errno != EEXIST){
-        perror("mkfifo failed\n");
+        perror("Failed mkfifo\n");
         return 1;
     }
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
     int fifo_fd = open(fifo_path, O_RDWR);
     if(fifo_fd == -1){
-        perror("failed open fifo\n");
+        perror("Failed open fifo\n");
         return 1;
     }
 
