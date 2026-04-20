@@ -42,7 +42,7 @@ int main(int argc, char** argv)
         int action = select(max_fd + 1, &readfds, NULL, NULL, NULL);
         if(action == -1){
             if(errno == EINTR) continue;
-            perror("select failed\n");
+            perror("Select failed\n");
             break;
         }
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
             }
 
             if(write(fifo_fd, buff, strlen(buff)) == - 1){
-                perror("write to fifo failed");
+                perror("Write to fifo failed\n");
                 break;
             }
         }
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
                 break;
             } else {
                 if (errno != EAGAIN && errno != EWOULDBLOCK) {
-                    perror("read from fifo failed");
+                    perror("Read from fifo failed\n");
                     break;
                 }
             }
