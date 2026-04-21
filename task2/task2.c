@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 
     printf("Type a msg and press ENTER. Press Ctrl+D to quit.\n");
 
-    for(;;){
+    while(1){
         FD_ZERO(&readfds);
         FD_SET(STDIN_FILENO, &readfds);
         FD_SET(fifo_fd, &readfds);

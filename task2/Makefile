@@ -7,6 +7,7 @@ all: $(TARGET)
 $(TARGET): $(SRC)
 	gcc $(CFLAGS) -o $(TARGET) $(SRC)
 
+
 clean:
 	rm -f $(TARGET)
 
