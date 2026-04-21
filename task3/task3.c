@@ -46,7 +46,6 @@ int cmp_rlex(const void *l, const void *r) {
     return strcasecmp(s2, s1); 
 }
 
-
 void cleanup_dynamo(dynamo *d) {
     if (d->lines) {
         for (size_t i = 0; i < d->count; ++i) {
@@ -90,14 +89,12 @@ int main(int argc, char** argv)
 
     while (fgets(buff, max_read_size, flin) != NULL) {
         size_t len = strlen(buff);
-        
 
         if (len > 0 && buff[len - 1] == '\n') {
             buff[len - 1] = '\0';
             --len;
         }
 
-        
         int has_visible = 0;
         for (size_t i = 0; i < len; ++i) {
             if (!isspace((unsigned char)buff[i])) {
@@ -110,7 +107,6 @@ int main(int argc, char** argv)
             continue; 
         }
 
-        
         if (arr_s.count >= arr_s.capacity) {
             size_t new_capacity = (arr_s.capacity == 0) ? 8 : arr_s.capacity * 2;
             
@@ -126,7 +122,6 @@ int main(int argc, char** argv)
             arr_s.capacity = new_capacity;
         }
 
-       
         arr_s.lines[arr_s.count] = strdup(buff);
         if (!arr_s.lines[arr_s.count]) {
             fprintf(stderr, "Memory allocation failed (strdup)\n");
@@ -140,7 +135,6 @@ int main(int argc, char** argv)
 
     fclose(flin);
 
-    
     switch (type) {
         case 0: cmp_func = cmp_plain; break;
         case 1: cmp_func = cmp_lex; break;
@@ -148,7 +142,6 @@ int main(int argc, char** argv)
         case 3: cmp_func = cmp_rlex; break;
     }
 
-   
     if (arr_s.count > 0) {
         qsort(arr_s.lines, arr_s.count, sizeof(char *), cmp_func);
     }
@@ -167,7 +160,6 @@ int main(int argc, char** argv)
 
     fclose(flout); 
 
-    
     cleanup_dynamo(&arr_s);
     return 0;
 }
