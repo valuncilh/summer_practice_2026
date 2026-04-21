@@ -102,9 +102,7 @@ void merge(int* arr, int left, int mid, int right)
     int *R = malloc(p2 * sizeof(int));
 
     if(!L || !R){
-        perror("malloc faiiled in merge");
-        free(L);
-        free(R);
+        perror("malloc faiiled in merge\n"); free(L); free(R);
         exit(1);
     }
 
@@ -183,7 +181,7 @@ void parallel_merge_sort(int *arr, int size, int num_threads) {
     thread_data *data = malloc(num_threads * sizeof(thread_data));
     
     if (!threads || !data) {
-        perror("malloc failed"); free(threads); free(data); exit(1);
+        perror("malloc failed\n"); free(threads); free(data); exit(1);
     }
 
     int chunk_size = size / num_threads;
@@ -199,7 +197,7 @@ void parallel_merge_sort(int *arr, int size, int num_threads) {
         if (data[i].left <= data[i].right) {
             pthread_create(&threads[i], NULL, sequential_merge_sort, &data[i]);
         } else {
-            // Если диапазон пустой, помечаем поток как "выполненный" (NULL)
+            // Если диапазон пустой (NULL)
             threads[i] = 0; 
         }
     }
