@@ -5,15 +5,15 @@
 
 
 const char* ALOWED_LONG_OPTION[] = {
-    "1c+\0",
-    "2c+\0",
-    "2c3\0",
-    "4c\0",
-    "8c\0",
-    "16c\0"
+    "1c+",
+    "2c+",
+    "2c3",
+    "4c",
+    "8c",
+    "16c"
 };
 
-_Bool admit_long_option(char * opt_arg)
+int admit_long_option(const char * opt_arg)
 {
     int size = sizeof(ALOWED_LONG_OPTION) / sizeof(char *);
     for(int i = 0; i < size; ++i){
@@ -41,10 +41,6 @@ int main(int argc, char** argv){
     char *non_opts[100];
     int non_cnt = 0;
 
-    for(int i = optind; i < argc; ++i){
-        non_opts[non_cnt++] = argv[i];
-    }
-
     while((opt = getopt_long(argc, argv, "mcst", long_opt, NULL)) != -1)
     {
         switch (opt) {
@@ -60,12 +56,32 @@ int main(int argc, char** argv){
                 break;
             case '?':
                 if(optopt != 0) printf("Incorrect option: '%c'\n", optopt);
-                else printf("Incorrect option: 'elbrus=%s'\n", argv[optind - 1]);
+                else printf("Incorrect option: '%s'\n", argv[optind - 1]);
                 return 1;
         }
     }
 
-    
+    for(int i = optind; i < argc; ++i){
+        non_opts[non_cnt++] = argv[i];
+    }
+
+    printf("Short options:");
+    for (int i = 0; i < short_cnt; i++) {
+        printf(" '%c'", short_opts[i]);
+    }
+    printf("\n");
+
+    printf("Long options:");
+    for (int i = 0; i < long_cnt; i++) {
+        printf(" 'elbrus=%s'", long_opts[i]);
+    }
+    printf("\n");
+
+    printf("Non options:");
+    for (int i = 0; i < non_cnt; i++) {
+        printf(" '%s'", non_opts[i]);
+    }
+    printf("\n");
 
     return 0;
 }
