@@ -59,7 +59,7 @@ cat out.txt
 - `make` — сборка task4
 - `make clean` — очистка
 
-Примеры
+Примеры запуска:
 
 ```bash
 ./task4 -tm -s --elbrus=16c file0 --elbrus=2c3 file1
@@ -69,4 +69,20 @@ cat out.txt
 
 ./task4 -tm -x --elbrus=8c
 # Incorrect option: 'x'
+```
+
+## task5
+программа на языке С, которая выполняет open, выводит возвращаемую ошибку и завершается с
+соответствующим кодом.
+
+### Сборка и запуск
+В директории task5:
+- `make` — сборка task4
+- `make clean` — очистка
+
+Пример запуска:
+# task5
+```bash
+>Can’t open file: No such file or directory.
+>Errno = ENOENT
 ```
