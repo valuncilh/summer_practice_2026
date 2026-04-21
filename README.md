@@ -51,3 +51,22 @@ cat out.txt
 # 3
 # a
 ```
+## task4
+Парсер аргументов командной строки с поддержкой коротких опций -m, -c, -s, -t и длинной --elbrus=значение (разрешённые значения: 1c+, 2c+, 2c3, 4c, 8c, 16c), а также произвольных не-опций.
+
+### Сборка и запуск
+В директории task4:
+make — сборка task4
+make clean — очистка
+
+Примеры
+
+```bash
+./task4 -tm -s --elbrus=16c file0 --elbrus=2c3 file1
+# Short options: 't' 'm' 's'
+# Long options: 'elbrus=16c' 'elbrus=2c3'
+# Non options: 'file0' 'file1'
+
+./task4 -tm -x --elbrus=8c
+# Incorrect option: 'x'
+```
