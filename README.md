@@ -56,8 +56,8 @@ cat out.txt
 
 ### Сборка и запуск
 В директории task4:
-- make — сборка task4
-- make clean — очистка
+- 'make' — сборка task4
+- 'make clean' — очистка
 
 Примеры
 
