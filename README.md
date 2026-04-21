@@ -81,7 +81,6 @@ cat out.txt
 - `make clean` — очистка
 
 Пример запуска:
-# task5
 ```bash
 >Can’t open file: No such file or directory.
 >Errno = ENOENT
