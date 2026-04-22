@@ -4,8 +4,9 @@
 #include <pwd.h> 
 #include <grp.h>
 
-void print_time(const char* , struct timespec);
 void print_timestamp(const char* , struct timespec);
+void convert_mode_to_str(char * , mode_t *);
+const char* set_type_file(struct stat * );
 
 int main(int argc, char** argv){
 
@@ -18,23 +19,9 @@ int main(int argc, char** argv){
         char perms[11] = "----------";
         mode_t m = st.st_mode;
 
-        if (S_ISDIR(m)) perms[0] = 'd';
-        if (m & S_IRUSR) perms[1] = 'r';
-        if (m & S_IWUSR) perms[2] = 'w';
-        if (m & S_IXUSR) perms[3] = 'x';
-        if (m & S_IRGRP) perms[4] = 'r';
-        if (m & S_IWGRP) perms[5] = 'w';
-        if (m & S_IXGRP) perms[6] = 'x';
-        if (m & S_IROTH) perms[7] = 'r';
-        if (m & S_IWOTH) perms[8] = 'w';
-        if (m & S_IXOTH) perms[9] = 'x';
+        convert_mode_to_str(perms, &m);
 
-        const char* file_type = "unknown";
-        if (S_ISREG(st.st_mode)) file_type = "regular file";
-        else if (S_ISDIR(st.st_mode)) file_type = "directory";
-        else if (S_ISLNK(st.st_mode)) file_type = "symbolic link";
-        else if (S_ISCHR(st.st_mode)) file_type = "character device";
-        else if (S_ISBLK(st.st_mode)) file_type = "block device";
+        const char* file_type = set_type_file(&st);
 
         struct passwd * pw = getpwuid(st.st_uid);
         struct group * gr = getgrgid(st.st_gid);
@@ -74,26 +61,36 @@ int main(int argc, char** argv){
 }
 
 
-void print_time(const char* label, struct timespec ts) 
+const char* set_type_file(struct stat * st)
 {
-    struct tm *tm_info;
-    char buffer[30];
+    const char* file_type = "unknown";
 
-    tm_info = localtime(&ts.tv_sec);
+    if (S_ISREG((*st).st_mode)) file_type = "regular file";
+    else if (S_ISDIR((*st).st_mode)) file_type = "directory";
+    else if (S_ISLNK((*st).st_mode)) file_type = "symbolic link";
+    else if (S_ISCHR((*st).st_mode)) file_type = "character device";
+    else if (S_ISBLK((*st).st_mode)) file_type = "block device";
+    return file_type;
+}
 
-    strftime(buffer, 30, "%Y-%m-%d %H:%M:%S", tm_info);
-
-    printf("  %s: %s.%09ld %s\n", 
-           label, 
-           buffer, 
-           ts.tv_nsec, 
-           buffer + 19);
+void convert_mode_to_str(char * perms, mode_t * m)
+{
+    if (S_ISDIR(*m)) perms[0] = 'd';
+    if (*m & S_IRUSR) perms[1] = 'r';
+    if (*m & S_IWUSR) perms[2] = 'w';
+    if (*m & S_IXUSR) perms[3] = 'x';
+    if (*m & S_IRGRP) perms[4] = 'r';
+    if (*m & S_IWGRP) perms[5] = 'w';
+    if (*m & S_IXGRP) perms[6] = 'x';
+    if (*m & S_IROTH) perms[7] = 'r';
+    if (*m & S_IWOTH) perms[8] = 'w';
+    if (*m & S_IXOTH) perms[9] = 'x';
 }
 
 void print_timestamp(const char* label, struct timespec ts) 
 {
     struct tm *tm_info;
-    char date_part[30];
+    char date_part[64];
     
     tm_info = localtime(&ts.tv_sec);
     strftime(date_part, sizeof(date_part), "%Y-%m-%d %H:%M:%S %z", tm_info);
