@@ -77,11 +77,32 @@ cat out.txt
 
 ### Сборка и запуск
 В директории task5:
-- `make` — сборка task4
+- `make` — сборка task5
 - `make clean` — очистка
 
 Пример запуска:
 ```bash
 >Can’t open file: No such file or directory.
 >Errno = ENOENT
+```
+
+## task6
+программа на языке С, которая выполняет open, выводит возвращаемую ошибку и завершается с
+соответствующим кодом.
+
+### Сборка и запуск
+В директории task6:
+- `make` — сборка task6
+- `make clean` — очистка
+
+Пример запуска:
+```bash
+./task6 Makefile
+  File: Makefile
+  Size: 170   Blocks: 8    IO Block: 4096    regular file
+Device: 2050    Inode: 811433   Links: 1
+Access: (0644/-rw-r--r--) Uid: ( 1000/   dev_v)   Gid: ( 1000/   dev_v)
+  Access: 2026-04-22 22:35:49.461300757 +0300
+  Modify: 2026-04-22 22:35:49.449300795 +0300
+  Change: 2026-04-22 22:35:49.449300795 +0300
 ```
