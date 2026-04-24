@@ -106,3 +106,40 @@ Access: (0644/-rw-r--r--) Uid: ( 1000/   dev_v)   Gid: ( 1000/   dev_v)
   Modify: 2026-04-22 22:35:49.449300795 +0300
   Change: 2026-04-22 22:35:49.449300795 +0300
 ```
+## task7
+Программа на С выполняет открытие общего файла на чтение. После открытия
+файла создать параллельный процесс с помощью fork. В обоих процессах свои
+файлы для записи, чтение информации из общего файла и копирование ее в собственные
+выходные файлы. По окончании копирования, вывод на экран содержимое полученных
+файлов.
+
+### Сборка и запуск
+В директории task7:
+- `make` — сборка task7
+- `make clean` — очистка
+
+Пример запуска:
+```bash
+./task7 test_file
+>Child:
+Tis time, my friend, 'tis time! The heart to peace aspires:
+Day follows day; the rolling stream of hours
+Crumbles the banks of being, and you and I
+Had thought to live, and yet, behold, we die.
+
+Though joy for ever flees, peace stays and concentration.
+For long now has it been my consolation,
+Hard-driven slave, to plan rebellious flight
+To some far sanctuary of work and chaste delight.
+
+>Parent:
+Tis time, my friend, 'tis time! The heart to peace aspires:
+Day follows day; the rolling stream of hours
+Crumbles the banks of being, and you and I
+Had thought to live, and yet, behold, we die.
+
+Though joy for ever flees, peace stays and concentration.
+For long now has it been my consolation,
+Hard-driven slave, to plan rebellious flight
+To some far sanctuary of work and chaste delight.
+```
