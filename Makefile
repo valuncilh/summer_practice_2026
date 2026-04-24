@@ -1,5 +1,5 @@
-TARGET = task5
-SRC = task5.c
+TARGET = task8
+SRC = task8.c
 CFLAGS ?= -Wall -Wextra -O2
 
 all: $(TARGET)
